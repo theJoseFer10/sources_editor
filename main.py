@@ -2,6 +2,7 @@ import curses
 from saveFiles import save_files, pront_status
 from open_file import cargar_archivo
 from syntax_leng.python_sintax import draw_lines
+import time
 #from prompt_toolkit import prompt
 def setup_colors(stdscr):
         curses.start_color()
@@ -84,6 +85,9 @@ def main(stdscr):
                     save_files(file_name, buffer)
                     y, x = 0, 0
                     status = f"Archivo '{file_name}' guardado."
+                    stdscr.addstr(max_y -1, 0, status[:max_x -1])
+                    stdscr.refresh()
+                    time.sleep(2)
                 stdscr.clear()
 
             elif commant == "open":
@@ -92,14 +96,29 @@ def main(stdscr):
                     try:
                         buffer = cargar_archivo(file_name)
                         y, x = 0, 0
-                        status = f"Archivo {file_name} cargado correctamente"
+                        status = f"Archivo '{file_name}' cargado correctamente"
+                        stdscr.addstr(max_y -1, 0, status[:max_x -1])
+                        stdscr.refresh()
+                        time.sleep(2)
                     except FileNotFoundError:
                         status = f"Archivo {file_name} no encontrado"
+                        stdscr.addstr(max_y -1, 0, status[:max_x -1])
+                        stdscr.refresh()
+                        time.sleep(2)
 
             elif commant == "save":
                 if open_file_name:
                     save_files(open_file_name, buffer)
                     status = f"Archivo '{open_file_name}' guardado."
+                    stdscr.addstr(max_y -1, 0, status[:max_x -1])
+                    stdscr.refresh()
+                    time.sleep(2)
+
+            elif commant == "help":
+                status = "exit = salir. save_as = guardar como. save = guardar. open = guardar."
+                stdscr.addstr(max_y - 1, 0, status[:max_x -1])
+                stdscr.refresh()
+                time.sleep(5)
 
         #Actualiza el buffer cada vez que ingresamos caracteres a la lista.
         elif 32 <= key <= 126:

@@ -5,6 +5,12 @@ python_keywords = {"False", "None", "True", "and", "as", "assert", "async", "awa
 "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"
 }
 
+c_keywords = {"auto", "break", "case", "char", "const", "continue", "default", "do", "double", 
+"else", "enum", "extern", "float", "for", "goto", "if", "int", "long", "register", 
+"return", "short", "signed", "sizeof", "static", "struct", "switch", "typedef", 
+"union", "unsigned", "void", "volatile", "while"
+}
+
 def draw_lines(stdscr, y, line, line_number_width, max_x, language="python"):
 
 	x = line_number_width
