@@ -1,7 +1,7 @@
 import curses
 from saveFiles import save_files, pront_status
 from open_file import cargar_archivo
-from syntax_leng.python_sintax import draw_lines
+from syntax_lang.lang_sintax import draw_lines
 import time
 #from prompt_toolkit import prompt
 def setup_colors(stdscr):
@@ -31,32 +31,30 @@ def main(stdscr):
     stdscr.clear()
     buffer = [""]
     open_file_name = None
+    extension = None
     #Cuatro bits para números y uno para espacios.
     line_number_width = 5
     y, x = 0, 0
     offset_y = 0
 
 #Manipulación del buffer de información.
+    if open_file_name:
+        if "." in open_file_name:
+            extension = open_file_name.split('.')[-1]
+        else:
+            extension = "txt"
+
     while True:
         #Obtenemos los valores maximos tanto de x como de y.
-        stdscr.clear()
+        stdscr.erase()
+        #stdscr.clear()
         max_y, max_x = stdscr.getmaxyx()
-
         for i in range(offset_y, offset_y + max_y - 1):
             if i < len(buffer):
                 line_number = f"{i+1}".rjust(line_number_width - 1) + " "
                 text = line_number + buffer[i]
-                draw_lines(stdscr, i - offset_y, buffer[i], line_number_width, max_x)
-                #stdscr.addstr(i - offset_y, 0, text[:max_x - 1])        
-        """
-        for i, line in enumerate(buffer):
-            if i < max_y - 1:  # evita escribir en la línea del status
-                line_number = f"{i+1}".rjust(line_number_width - 1) + " "
-                text = line_number + line
-                stdscr.addstr(i, 0, text[:max_x - 1])  # trunca si es necesario
-        """
-                
-                
+                draw_lines(stdscr, i - offset_y, buffer[i], line_number_width, max_x, extension, num_line = i)
+                #stdscr.addstr(i - offset_y, 0, text[:max_x - 1])
         #Mostramos el status del cursor y de la pantalla en la fila que reservamos adelante.
         status = f"Estado: Ln {y+1}, Col {x+1} | Screen: {max_y}x{max_x}"
         stdscr.addstr(max_y - 1, 0, status[:max_x - 1])
@@ -115,10 +113,16 @@ def main(stdscr):
                     time.sleep(2)
 
             elif commant == "help":
-                status = "exit = salir. save_as = guardar como. save = guardar. open = guardar."
+                status = "exit = salir. save_as = guardar como. save = guardar. open = abrir."
                 stdscr.addstr(max_y - 1, 0, status[:max_x -1])
                 stdscr.refresh()
                 time.sleep(5)
+
+            elif commant == "return":
+                status = "regresando..."
+                stdscr.addstr(max_y - 1, 0, status[:max_x -1])
+                stdscr.refresh()
+                time.sleep(1)
 
         #Actualiza el buffer cada vez que ingresamos caracteres a la lista.
         elif 32 <= key <= 126:
