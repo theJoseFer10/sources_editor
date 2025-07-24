@@ -1,9 +1,17 @@
 import curses
+import signal
 from saveFiles import save_files, pront_status
 from open_file import cargar_archivo
-from syntax_lang.lang_sintax import draw_lines
+from syntax_leng.lang_sintax import draw_lines
 import time
 #from prompt_toolkit import prompt
+
+stdscr_global = None
+
+def resize_handler(signum, frame):
+    if stdscr_global:
+        curses.resizeterm(*stdscr_global.getmaxyx())
+
 def setup_colors(stdscr):
         curses.start_color()
         if not curses.has_colors():
@@ -25,6 +33,8 @@ def setup_colors(stdscr):
 #inicamos el editor con la funcion main
 #stdscr es el objeto principal, se encarga de dibuar y leer entradas de texto.
 def main(stdscr):
+    global stdscr_global
+    stdscr_global = stdscr
     curses.curs_set(1)
     if not setup_colors(stdscr):
         return
@@ -47,6 +57,7 @@ def main(stdscr):
     while True:
         #Obtenemos los valores maximos tanto de x como de y.
         stdscr.erase()
+        signal.signal(signal.SIGWINCH, resize_handler)
         #stdscr.clear()
         max_y, max_x = stdscr.getmaxyx()
         for i in range(offset_y, offset_y + max_y - 1):
@@ -82,7 +93,7 @@ def main(stdscr):
                 if file_name:
                     save_files(file_name, buffer)
                     y, x = 0, 0
-                    status = f"Archivo '{file_name}' guardado."
+                    status = f"Archivo '{file_name}' guardado... "
                     stdscr.addstr(max_y -1, 0, status[:max_x -1])
                     stdscr.refresh()
                     time.sleep(2)
@@ -94,12 +105,12 @@ def main(stdscr):
                     try:
                         buffer = cargar_archivo(file_name)
                         y, x = 0, 0
-                        status = f"Archivo '{file_name}' cargado correctamente"
+                        status = f"Archivo '{file_name}' cargado correctamente.."
                         stdscr.addstr(max_y -1, 0, status[:max_x -1])
                         stdscr.refresh()
                         time.sleep(2)
                     except FileNotFoundError:
-                        status = f"Archivo {file_name} no encontrado"
+                        status = f"Archivo {file_name} no encontrado.."
                         stdscr.addstr(max_y -1, 0, status[:max_x -1])
                         stdscr.refresh()
                         time.sleep(2)
@@ -107,7 +118,7 @@ def main(stdscr):
             elif commant == "save":
                 if open_file_name:
                     save_files(open_file_name, buffer)
-                    status = f"Archivo '{open_file_name}' guardado."
+                    status = f"Archivo '{open_file_name}' guardado..."
                     stdscr.addstr(max_y -1, 0, status[:max_x -1])
                     stdscr.refresh()
                     time.sleep(2)
@@ -133,9 +144,10 @@ def main(stdscr):
                 x = 0
             while y >= len(buffer):
                 buffer.append("")
-
-            buffer[y] = buffer[y][:x] + chr(key) + buffer[y][x:]
-            x += 1
+            
+            if 32 <= key <= 126:
+                buffer[y] = buffer[y][:x] + chr(key) + buffer[y][x:]
+                x += 1
 
         #Actualiza rl buffer cada vez que quitamos caracteres de la lista.
         elif key in (curses.KEY_BACKSPACE, 127):
@@ -167,8 +179,8 @@ def main(stdscr):
         elif key == curses.KEY_RIGHT:
             x = min(len(buffer[y]), x + 1)
 
-        else:
-            buffer[y] = buffer[y][:x] + chr(key) + buffer[y][x:]
-            x += 1
+        #else:
+            #buffer[y] = buffer[y][:x] + chr(key) + buffer[y][x:]
+            #x += 1
 
 curses.wrapper(main)
