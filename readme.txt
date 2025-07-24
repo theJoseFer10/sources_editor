@@ -95,4 +95,3 @@ ni librerías pesadas. Cada línea está pensada para ser clara, funcional y ext
 ## 📜 Licencia
 
 Este proyecto es de código abierto. Puedes usarlo, modificarlo y compartirlo libremente.
-
