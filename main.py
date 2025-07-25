@@ -23,7 +23,7 @@ def setup_colors(stdscr):
             curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
             curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
             curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
-            curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+            #curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
             return True
         except curses.error:
             stdscr.addstr(0, 0, "Error al iniciar colores.")
@@ -63,7 +63,7 @@ def main(stdscr):
         for i in range(offset_y, offset_y + max_y - 1):
             if i < len(buffer):
                 line_number = f"{i+1}".rjust(line_number_width - 1) + " "
-                text = line_number + buffer[i]
+                #text = line_number + buffer[i]
                 draw_lines(stdscr, i - offset_y, buffer[i], line_number_width, max_x, extension, num_line = i)
                 #stdscr.addstr(i - offset_y, 0, text[:max_x - 1])
         #Mostramos el status del cursor y de la pantalla en la fila que reservamos adelante.
