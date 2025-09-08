@@ -1,0 +1,11 @@
+#COSAS POR REVISAR#
+1- Codigo de zafiro.
+2- Nuevos agregados al editor.
+  #a) Soporte para varios comandos de teclado.
+  #b) Agregar soporte para caracteres especiales.
+  c) Agregar soporte para varios archivos.
+  d) Reservar espacio de para arbol de directorios.
+  e) Estilo de sintaxis (texto subrayado y negritas).
+3- Recomendaciones.
+4- Empaquetado en .deb
+Hola mundo desde un txt

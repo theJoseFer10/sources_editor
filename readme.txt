@@ -18,7 +18,7 @@
 - 📄 Edición de texto con numeración de líneas
 - 💾 Guardar y abrir archivos (`save`, `save_as`, `open`)
 - 🎨 Resaltado de sintaxis para Python y C
-- 🖥️ Detección dinámica del tamaño de la terminal
+- 🖥️Detección dinámica del tamaño de la terminal
 - 🧭 Navegación con flechas y scroll vertical
 
 ---

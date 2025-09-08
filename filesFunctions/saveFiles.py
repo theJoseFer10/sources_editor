@@ -23,6 +23,6 @@ def file_name_window(stdscr):
 """
 
 def save_files(file_name, buffer):
-    with open(file_name, "w") as f:
+    with open(file_name, "w", encoding='UTF-8') as f:
         for line in buffer:
             f.write(line+"\n")

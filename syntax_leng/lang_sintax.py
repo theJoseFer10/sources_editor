@@ -4,17 +4,17 @@ python_keywords = {
     "False", "None", "True", "and", "as", "assert", "async", "await", "break", "class", 
     "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", 
     "if", "import", "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", 
-    "try", "while", "with", "yield"
+    "try", "while", "with", "yield", "print", "main"
 }
 
 c_keywords = {
     "auto", "break", "case", "char", "const", "continue", "default", "do", "double", 
     "else", "enum", "extern", "float", "for", "goto", "if", "int", "long", "register", 
     "return", "short", "signed", "sizeof", "static", "struct", "switch", "typedef", 
-    "union", "unsigned", "void", "volatile", "while"
+    "union", "unsigned", "void", "volatile", "while", "printf", "main"
 }
 
-def draw_lines(stdscr, y, line, line_number_width, max_x, language, num_line):
+def draw_lines(stdscr, y, line, line_number_width, max_x, num_line):
     #Agregamos un número una validación para verificar que no haya errores en caso de 
 	#que la línea este fuera de la pantalla.
     x = line_number_width
@@ -30,7 +30,7 @@ def draw_lines(stdscr, y, line, line_number_width, max_x, language, num_line):
 
         #Seleccionamos las palabras clave dependiendo de la extención del archivo que se este
         #editando.
-        kw_set = python_keywords if language == "py" else c_keywords if language == "c" else set()
+        kw_set = python_keywords.union(c_keywords)
         for kw in kw_set:
             if frament.startswith(kw) and (i + len(kw) == len(line) or not line[i + len(kw)].isalnum()):
                 try:
