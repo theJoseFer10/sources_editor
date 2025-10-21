@@ -48,6 +48,7 @@ def shortcuts(stdscr, key, buffer, open_file_name, max_x):
                 save_files(file_name, buffer)
         buffer = [""]
         open_file_name = None
+        new_y, new_x = 0,0
         status = "Archivo cerrado correctamente"
         stdscr.clear()
         stdscr.addstr(max_y - 1, 0, status[:max_x - 1])
