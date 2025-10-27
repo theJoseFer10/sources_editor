@@ -1,9 +1,13 @@
 import curses
 import signal
+import sys
+import os
+import time
 from keyboardFunctions.keyboard import shortcuts
 from syntax_leng.lang_sintax import draw_lines
 from keyboardFunctions.commands import runCommand
-import time
+from filesFunctions.open_file import cargar_archivo
+from config.load_config import cargar_configuracion
 
 stdscr_global = None
 
@@ -32,6 +36,8 @@ def setup_colors(stdscr):
 def main(stdscr):
     global stdscr_global
     stdscr_global = stdscr
+    ruta_config = os.path.expanduser("~/.zafiro/config.json")
+    config = cargar_configuracion(ruta_config)
     curses.curs_set(1)
     #curses.raw permite un mejor manejo de teclas.
     curses.raw()
@@ -39,8 +45,18 @@ def main(stdscr):
         return
     stdscr.clear()
     stdscr.keypad(True)
-    buffer = [""]
-    open_file_name = None
+    #Verificamos la que exista el archivo que se envió como parametro.
+    if len(sys.argv) > 1:
+        file_to_open = sys.argv[1]
+        if os.path.isfile(file_to_open):
+            buffer = cargar_archivo(file_to_open)
+            open_file_name = file_to_open
+        else:
+            buffer=[""]
+            open_file_name = None
+    else:
+        buffer=[""]
+        open_file_name = None
     extension = None
     line_number_width = 5
     y, x = 0, 0
@@ -53,9 +69,14 @@ def main(stdscr):
 
     while True:
         max_y, max_x = stdscr.getmaxyx()
+        visible_lines = max_y - 1
+        if y < offset_y:
+            offset_y = y
+        elif y>=offset_y + visible_lines - 1:
+            offset_y = y - visible_lines + 2
         stdscr.erase()
 
-        for i in range(offset_y, offset_y + max_y - 1):
+        for i in range(offset_y, offset_y + visible_lines):
             if i < len(buffer):
                 line_number = f"{i+1}".rjust(line_number_width - 1) + " "
                 draw_lines(stdscr, i - offset_y, buffer[i], line_number_width, max_x, num_line=i)
@@ -71,7 +92,10 @@ def main(stdscr):
         elif y - offset_y < 0:
             offset_y = max(0, offset_y - 1)
 
-        stdscr.move(y - offset_y, x + line_number_width)
+        cursor_y = y - offset_y
+        cursor_x = x + line_number_width
+        if 0 <= cursor_y < visible_lines and 0 <= cursor_x < max_x:
+            stdscr.move(cursor_y, cursor_x)
         stdscr.refresh()
 
         try:
