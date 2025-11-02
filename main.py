@@ -2,7 +2,6 @@ import curses
 import signal
 import sys
 import os
-import time
 from keyboardFunctions.keyboard import shortcuts
 from syntax_leng.lang_sintax import draw_lines
 from keyboardFunctions.commands import runCommand
@@ -15,33 +14,96 @@ def resize_handler(signum, frame):
     if stdscr_global:
         curses.resizeterm(*stdscr_global.getmaxyx())
 
-def setup_colors(stdscr):
+def setup_colors(stdscr, config = None):
     curses.start_color()
+    curses.use_default_colors()
+    try:
+        curses.curs_set(config.get("cursorVisible", 1))
+    except Exception:
+        pass
+
+    stdscr.nodelay(False)
+    stdscr.timeout(-1)
+
+    if (config or {}).get("mouse", {}).get("enabled"):
+        curses.mousemask(curses.ALL_MOUSE_EVENTS | curses.REPORT_MOUSE_POSITION)
+        
+    # Verificamos que el terminal soporte colores.
     if not curses.has_colors():
         stdscr.addstr(0, 0, "Tu terminal no admite colores")
         stdscr.clear()
         stdscr.getch()
-        return False
-    try:
-        curses.init_pair(1, curses.COLOR_CYAN, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-        curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
-        return True
-    except curses.error:
-        stdscr.addstr(0, 0, "Error al iniciar colores.")
-        stdscr.refresh()
-        stdscr.getch()
-        return False
-
+        return False, {}
+    
+    # Helper para resolver nombres de colores a códigos de curses.
+    def color_by_name(name):
+        if not isinstance(name, str):
+            return curses.COLOR_WHITE
+        try:
+            return getattr(curses, "COLOR_" +  name.upper())
+        except Exception:
+            return curses.COLOR_WHITE
+        
+    # Valores por defecto.
+    base_style = {
+        "keyword": {"fg": "CYAN", "bg": "BLACK", "attr": ["bold"]},
+        "string": {"fg": "GREEN", "bg": "BLACK", "attr": []},
+        "comment": {"fg": "RED", "bg": "BLACK", "attr": []},
+        "default": {"fg": "WHITE", "bg": "BLACK", "attr": []},
+    }
+    
+    # Mezclar con configuración si está disponible.
+    cfg_colors = {}
+    if config:
+        cfg_colors = config.get("colors", {})
+        
+    for toke, defaults in base_style.items():
+        user = cfg_colors.get(toke, {})
+        if "fg" in user:
+            defaults["fg"] = user["fg"]
+        if "bg" in user:
+            defaults["bg"] = user["bg"]
+        if "attr" in user and isinstance(user["attr"], list):
+            defaults["attr"] = user["attr"]
+            
+    # Inicializar pares de colores.
+    style_out = {}
+    pair_index = 1
+    for token, val in base_style.items():
+        fg = color_by_name(val["fg"])
+        bg = color_by_name(val["bg"])
+        
+        try:
+            curses.init_pair(pair_index, fg, bg)
+        except curses.error:
+            curses.init_pair(pair_index, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        attr = 0
+        for a in val.get("attr", []):
+            if a.lower() == "bold":
+                attr |= curses.A_BOLD
+            elif a.lower() == "underline":
+                attr |= curses.A_UNDERLINE
+            elif a.lower() == "reverse":
+                attr |= curses.A_REVERSE
+        
+        style_out[token] = {"pair": pair_index, "attr": attr}
+        pair_index += 1
+        
+    return True, style_out
+    
 def main(stdscr):
     global stdscr_global
     stdscr_global = stdscr
+
     ruta_config = os.path.expanduser("~/.zafiro/config.json")
     config = cargar_configuracion(ruta_config)
+    tabsize = config.get("tabSize", 4)
+
     curses.curs_set(1)
     #curses.raw permite un mejor manejo de teclas.
     curses.raw()
-    if not setup_colors(stdscr):
+    ok, styles = setup_colors(stdscr, config)
+    if not ok:
         return
     stdscr.clear()
     stdscr.keypad(True)
@@ -57,6 +119,7 @@ def main(stdscr):
     else:
         buffer=[""]
         open_file_name = None
+        
     extension = None
     line_number_width = 5
     y, x = 0, 0
@@ -79,7 +142,7 @@ def main(stdscr):
         for i in range(offset_y, offset_y + visible_lines):
             if i < len(buffer):
                 line_number = f"{i+1}".rjust(line_number_width - 1) + " "
-                draw_lines(stdscr, i - offset_y, buffer[i], line_number_width, max_x, num_line=i)
+                draw_lines(stdscr, i - offset_y, buffer[i], line_number_width, max_x, num_line=i, styles = styles)
 
         status = f"Estado: Ln {y+1}, Col {x+1} | Screen: {max_y}x{max_x}"
         stdscr.addstr(max_y - 1, 0, status[:max_x - 1])
@@ -157,10 +220,12 @@ def main(stdscr):
                         buffer.append("")
                     y += 1
                     x = 0
-                while y > len(buffer):
+                while y >= len(buffer):
                     buffer.append("")
-                buffer[y] = buffer[y][:x] + (" " * 4) + buffer[y][:x]
-                x += 4
+                if x > len(buffer[y]):
+                    buffer[y] = buffer[y] + (" " * (x - len(buffer[y])))
+                buffer[y] = buffer[y][:x] + (" " * tabsize) + buffer[y][x:]
+                x += tabsize
 
 
         elif isinstance(key, int):

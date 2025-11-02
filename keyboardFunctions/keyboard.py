@@ -53,7 +53,7 @@ def shortcuts(stdscr, key, buffer, open_file_name, max_x):
         stdscr.clear()
         stdscr.addstr(max_y - 1, 0, status[:max_x - 1])
         stdscr.refresh()
-        time.sleep(1)
+        time.sleep(2)
 
     elif key == '\x11':  # Ctrl+Q
         res = pront_status(stdscr, "Quieres guardar antes de cerrar? (s/n): ", max_x)
