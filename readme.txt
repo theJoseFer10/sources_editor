@@ -20,7 +20,7 @@
 - 🎨 Resaltado de sintaxis para Python y C
 - 🖥️Detección dinámica del tamaño de la terminal
 - 🧭 Navegación con flechas y scroll vertical
-
+- 🎨 Personalización mediante archivo Json.
 ---
 
 ## 🛠️ compilación e instalación
@@ -31,28 +31,15 @@ requisitos.
 2- dpkg.
 
 instalación
-1- el sistema debe de tener lla siguiente estructura.
-.
-├── DEBIAN
-│   └── control
-└── usr
-    └── bin
-        ├── lang_sintax.py
-        ├── main.py
-        ├── open_file.py
-        ├── saveFiles.py
-        └── zafiroed
+1- Ingresa al apartado de descargas en el sitio web.
+2- Descarga el archivo correspondiente para tu sistema linux.
+3- Sistemas basados en debian ejecuta el comando: #sudo dpkg -i zafiro.deb
+4- Sistemas basados en arch ejecuta el comando: #sudo pacman -i zafiro-1.0.1-1-any.pkg.tar.zst
 
-2- en el archivo "zafiroed" debe de ir el siguiente encabezado.
-#!/usr/bin/env python3
+Comprovación
+1- Ejecuta el comando zafiro.
 
-3- ejecutamos el siguiente comando.
-dpkg-deb --build zafiroed
-
-4- instalación.
-sudo dpkg -i zafiroed
-(nos debemos posicionar el el directorio donde esta el .deb)
-una vez instalado, podremos acceder a el con el comando zafiroed.
+---
 
 #compilar e instalar para windows.
 --Requisitos--
@@ -75,6 +62,12 @@ Es un editor de texto y código simialr a nano y vim.
 Para ejecutar comando presionamos la tecla "esc", esto permite introducir comandos en donde se encuentra la barra de
 status.
 
+#Parametros de comando.
+Si quieres abrir un archivo con zafiro que se encuentra dentro del mismo directorio, puedes ejecutrar el siguiente comando.
+"zafiro archivo.extension" --> "zafiro main.py"
+Si el editor encuentra el archivo en ese directorio entonces lo abrirá.
+
+
 #Comandos funcionales.
 exit -- "Termina el programa".
 save_as -- "Guardar como".
@@ -82,6 +75,22 @@ save -- "Guardar cambios en archivos ya existentes".
 open -- "Abrir archivos guardados en nuestro equipo".
 help -- "Muestra los comandos disponibles y su funcion".
 return -- "regresamos al modo edicion".
+
+#Atajos de teclado.
+ctrl + a -- "Guardar como".
+ctrl + s -- "Guardar".
+ctrl + o -- "Abrir archivo".
+ctrl + q -- "Terminar el programa".
+ctrl + x -- "Cerrar archivo y vaciar buffer".
+
+---
+
+## 🎨 Personalización del editor.
+Si quieres personalizar el editor a tu gusto, puedes hacerlo de la siguiente manera.
+1- Crea el directorio oculto .zafiro con el siguiente comando: "mkdit .zafiro"
+2- Ingresa al directorio con el siguiente comando: "cd ~/.zafiro"
+3- Crea un archivo llamado "config.json".
+4- Puedes crear tu propia configuración o puedes visitar nuestra biblioteca de temas en nuestro sitio web.
 
 ---
 
