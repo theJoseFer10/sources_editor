@@ -104,3 +104,9 @@ ni librerías pesadas. Cada línea está pensada para ser clara, funcional y ext
 ## 📜 Licencia
 
 Este proyecto es de código abierto. Puedes usarlo, modificarlo y compartirlo libremente.
+
+
+
+
+
+Esto es un ejemplo de un cambio, Manuel no aceptes este pr xd
