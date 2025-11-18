@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-VALID_COLORS = {"balck", "red", "green", "yellow", "blue", "magenta", "cyan", "white"}
+VALID_COLORS = {"black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"}
 VALID_ATTRS = {"bold", "underline", "reverse"}
 
 
@@ -31,10 +31,9 @@ def cargar_configuracion(ruta="~/.zafiro/config.json"):
     color = cfg.get("colors", {})
     if isinstance(color, dict):
         for token, spec in color.items():
-            if not isinstance(spec, dic):
-                if not isinstance(spec, dict):
-                    continue
-                spec["fg"] = _norm_color(spec.get("fg"))
-                spec["bg"] = _norm_color(spec.get("bg"))
-                spec["attr"] = _norm_color(spec.get("attr"))
+            if not isinstance(spec, dict):
+                continue
+            spec["fg"] = _norm_color(spec.get("fg"))
+            spec["bg"] = _norm_color(spec.get("bg"))
+            spec["attr"] = _norm_attrs_list(spec.get("attr"))
     return cfg
